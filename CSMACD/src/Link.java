@@ -1,47 +1,76 @@
 import java.util.Random;
 import java.lang.Thread;
 import java.util.Vector;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
+import java.io.File;
+
 
 //interface ChannelConstants{ int FREE = 0;  //Indicates Channel is free
 //int INUSE = 1; //Indicates Channel is being used
 //}
 
-
+ 
 class Link implements Runnable{
 	
 	FileWriter linkfile;
 	private Vector<Node> nodes;
 	static public boolean idle = true;
+	static public boolean status = false;
 	
-	static int ChannelStatus;
 	
-	public Link() {
-		linkfile = new FileWriter("C://Test//Link.txt");
-		nodes = new Vector <Node>(4);
+	//static int ChannelStatus;
+	
+	public Link(String clock) {//create node
 		
+		//nodes = new Vector <Node>(4);
+		new SystemClock();
+		
+		Node node[] = new Node[5];
+		
+		String time = SystemClock.print();
+		for(int i = 0;i<4;i++)
+		{
+			node[i] = new Node(i+1,time);
+		}
+		//node[0] = new Node(1, time);
+		//node[1] = new Node(2, time);
+		//node[2] = new Node(3, time);
+		//node[3] = new Node(4, time);
+		//node[4] = new Node(5, time);
+		
+		try { 
+			File link = new File("C:\\Test\\Link.txt");
+			linkfile = new FileWriter("C\\Test\\Link.txt");
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
-	public 
+	
 	public void run() {
-		if(systemClock == 0) {
-				linkfile.write("00:00:000 Link start\n");
-				linkfile.write("00:00: 000 System Clock Start");
-				
-		}
-		while(true) {
-			systemClock++;
-			Thread.sleep(rand);
+		
+		
+		for(int i = 0 ; i <= 1000*60 ; i++) {
+			SystemClock.set();
+	
+			if(SystemClock.get() == 0) {
+				linkfile.write(SystemClock.get()+" Link start\n");
+				linkfile.write(SYstemClock.get()+" System Clock Start\n");
+				}
 			try {
-				if(/*idle == true &&*/ChannelStatus == INUSE) {
+				if(idle == true) {
 					
-					 BackoffTimer timer = new BackoffTimer();
-					Thread.sleep();
-					linkfile.write();
+					linkfile.write(SystemClock.get() + );
+					idle = false;
 				}
 				else {
-					if(ChannelStatus == FREE ) {
+					if(status == true ) {//받는 중
 						
+					}
+					else {
+						BackoffTimer timer = new BackoffTimer();
+						Thread.sleep(2*propDelay*timer.backoffTime(count));
 					}
 				}
 		
@@ -60,6 +89,9 @@ class Link implements Runnable{
 			Node node3 = new Node("Node3");
 			Node node4 = new Node("Node4");
 			*/
+			new SystemClock;
+			String time = SystemClock.print();
+			Link link = new Link(time);
 		}
 	}
 }
