@@ -53,7 +53,7 @@ class Link implements Runnable{
 	}
 	
 	class CSMACD {
-		public void main(String args[]) {
+		public static void main(String args[]) {
 			/*
 			Node node1 = new Node("Node1");
 			Node node2 = new Node("Node2");

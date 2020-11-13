@@ -7,6 +7,9 @@ class Node extends Thread{
 	private int name;
 	private final int num = 5; //5msec data
 	private String fileName;
+	int time;
+	int node;
+	int status;
 	
 	//Node 객체
 	Node(int name, String clock){
@@ -24,37 +27,56 @@ class Node extends Thread{
         }catch(Exception e){
             e.printStackTrace();
         }
+        
+        this.time = (int)(Math.random() * 100); //데이터 보낼 시간
+		this.node = (int)(Math.random() * 5) + 1; //보낼 노드
 	}
 	
+	public int trans() {
+		/* @param trans() : data 전송할 시간 return
+		 * @param time : data 전송할 시간(객체 생성시 자동 초기화)
+		 */
+		return time;
+	}
+		
+	
 	public void run() {
-		int time = (int)(Math.random() * 100); //데이터 보낼 시간
-		int node = (int)(Math.random() * 5) + 1; //보낼 노드
+		/* @param run() : Link에서 Accept를 받고 실행하는 method
+		 * 
+		 */
+		for(int i = 0 ; i <= 5 ; i++) {
+			if(i == 5) {
+				success();
+			}
+		}
+	}
+	
+	public void success() {
 		try{
             
             File file = new File(fileName);
             FileWriter fw = new FileWriter(file, true);
-            
-            fw.write(SystemClock.print() +" " + time);
+             
+            fw.write(SystemClock.print()+ " Data Send Finished To Node" +node + "/n");
             fw.flush();
              
         }catch(Exception e){
             e.printStackTrace();
         }
-			
-			if (SystemClock.get() == time) {
-				/* 데이터 요청 -> 보낼 시간과 SystemClock이 같으면 요청한다 */
-				try{
-		            
-		            File file = new File(fileName);
-		            FileWriter fw = new FileWriter(file, true);
-		            
-		            fw.write(SystemClock.print()+" Data Send Request To Node"+node);
-		            fw.flush();
-		             
-		        }catch(Exception e){
-		            e.printStackTrace();
-		        }
-			}
+	}
+	
+	public void set_status(int status) {
+		/* 
+		 * Link에서 Accept할 때, Node2 -> Node3이면 Node3.set_status(1) 을 해줘야함
+		 * Link에서 
+		 */
+		this.status = status;
+	}
+		
+	public int get_status() {
+		return status;
+	}
+	
 			
 			/* Link에 요청 -> True or False
 			 * if == True 이면, Accept text 띄우고 data 5msec 전송
@@ -74,6 +96,5 @@ class Node extends Thread{
 	            System.err.println("Interrupted: Interrupt exception");
 	        }
 	        */
-		}
 	}
 }
