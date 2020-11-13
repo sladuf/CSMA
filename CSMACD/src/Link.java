@@ -21,7 +21,7 @@ class Link implements Runnable{
 	
 	//static int ChannelStatus;
 	
-	public Link(String clock) {//create node
+	public Link() {
 		
 		//nodes = new Vector <Node>(4);
 		new SystemClock();
@@ -29,15 +29,15 @@ class Link implements Runnable{
 		Node node[] = new Node[5];
 		
 		String time = SystemClock.print();
-		for(int i = 0;i<4;i++)
+		for(int i = 0;i<5;i++)
 		{
 			node[i] = new Node(i+1,time);
 		}
-		//node[0] = new Node(1, time);
-		//node[1] = new Node(2, time);
-		//node[2] = new Node(3, time);
-		//node[3] = new Node(4, time);
-		//node[4] = new Node(5, time);
+		node[0] = new Node(1, time);
+		node[1] = new Node(2, time);
+		node[2] = new Node(3, time);
+		node[3] = new Node(4, time);
+		node[4] = new Node(5, time);
 		
 		try { 
 			File link = new File("C:\\Test\\Link.txt");
@@ -50,18 +50,22 @@ class Link implements Runnable{
 	
 	public void run() {
 		
-		
+		String sendRequest = SystemClock.print() + "Node"+ node[send].name +
+				"Data Send Request To Node" + node[receive].name;
 		for(int i = 0 ; i <= 1000*60 ; i++) {
 			SystemClock.set();
 	
 			if(SystemClock.get() == 0) {
-				linkfile.write(SystemClock.get()+" Link start\n");
-				linkfile.write(SYstemClock.get()+" System Clock Start\n");
+				linkfile.write(SystemClock.print()+" Link start\n");
+				linkfile.write(SYstemClock.print()+" System Clock Start");
 				}
+			if(node[send]_signal == true) { //node's send signal
+				String sendRequest = SystemClock.print() + "Node"+ node[send].name + "Data Send Request To Node" + node[receive].name;
+				linkfile.write(sendRequest);
+			}
 			try {
 				if(idle == true) {
 					
-					linkfile.write(SystemClock.get() + );
 					idle = false;
 				}
 				else {
@@ -69,8 +73,8 @@ class Link implements Runnable{
 						
 					}
 					else {
-						BackoffTimer timer = new BackoffTimer();
-						Thread.sleep(2*propDelay*timer.backoffTime(count));
+						//BackoffTimer timer = new BackoffTimer();
+						//Thread.sleep();
 					}
 				}
 		
@@ -89,9 +93,10 @@ class Link implements Runnable{
 			Node node3 = new Node("Node3");
 			Node node4 = new Node("Node4");
 			*/
-			new SystemClock;
-			String time = SystemClock.print();
-			Link link = new Link(time);
+			
+			//new SystemClock;
+			//String time = SystemClock.print();
+			Link link = new Link();
 		}
 	}
 }
