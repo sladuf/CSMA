@@ -45,7 +45,7 @@ class Link implements Runnable{
 		for(int i = 0 ; i <= 1000*60 ; i++) {
 			SystemClock.set();
 	
-			if(SystemClock.get() == 0) {
+			if(SystemClock.get() == 0) {//00:00:000에 보내기
 				try {
 					linkfile.write(SystemClock.print()+" Link start\n");
 					linkfile.write(SystemClock.print()+" System Clock Start\n");
@@ -53,7 +53,15 @@ class Link implements Runnable{
 						e.printStackTrace();
 				}
 			}
-			else if(SystemClock.print().equals("01:00:000"));
+			else if(SystemClock.print().equals("01:00:000"))//01:00:000에 보내기
+			{
+				try {
+					linkfile.write(SystemClock.print()+" System Clock Finished\n");
+					linkfile.write(SystemClock.print()+" Link Finished\n");
+				}catch(IOException e) {
+						e.printStackTrace();
+				}
+			}
 			for(int j = 0; j<5; j++) {
 				if(this.node[j].trans() == SystemClock.get()) { /* node가 보낼 시간 == System Clock => 전송요청 메세지
 					/*@ String sendReq : Link.txt 입력용 String*/
@@ -86,7 +94,6 @@ class Link implements Runnable{
 					}
 					try {
 						
-						node[node[now_nodenum].node].success(); //성공했다고 파일에 쓰기
 						node[now_nodenum].start(); //accept하고 실행해줌
 						idle = false;
 						node[node[now_nodenum].node].set_status(1); // 받는 노드의 status 1로 변경
