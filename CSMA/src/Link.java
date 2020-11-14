@@ -14,7 +14,7 @@ class Link implements Runnable{
 	static public boolean idle = true;
 	static public boolean status = false;
 	
-	private int now_nodenum;
+	private int now_nodenum; /*@보내려는 node 이름 받음*/
 	
 	Node node[] = new Node[5];
 	
@@ -54,8 +54,8 @@ class Link implements Runnable{
 						e.printStackTrace();
 				}
 			}
-			for(int j = 0; j<4; j++) {
-				if(this.node[j].time == SystemClock.get()) { /* node가 보낼 시간 == System Clock => 전송요청 메세지
+			for(int j = 0; j<5; j++) {
+				if(this.node[j].trans() == SystemClock.get()) { /* node가 보낼 시간 == System Clock => 전송요청 메세지
 					/*@ String sendReq : Link.txt 입력용 String*/
 					String sendReq = SystemClock.print() + "Node"+ j + 
 							"Data Send Request To Node" + node[j].node+ "\n";
@@ -66,36 +66,68 @@ class Link implements Runnable{
 						e.printStackTrace(); 
 					}
 				}
-				node[5] = node[j];
+				now_nodenum = j;
 			}
 			
 			try {
 				if(idle == true) { // Link: idle
-					
-					String Accept = SystemClock.print() + "Accept: "+ node;
-					idle = false;
+					//Accept 출력
+					String accept = SystemClock.print() + "Accept: Node"+ now_nodenum+ 
+							"Data Send Request To Node"+node[now_nodenum].node +"\n";
+					//끝났을 때 출력
+					String finish = SystemClock.print() + "Node"+ now_nodenum+ 
+							"Data Send Finished To Node"+node[now_nodenum].node+"\n";
+					/*file에 쓰고*/
+					try {
+						linkfile.write(accept);
 						
+					} catch (IOException e) {
+						e.printStackTrace(); 
+					}
+					try {
+						
+						node[node[now_nodenum].node].success(); //성공했다고 파일에 쓰기
+						node[now_nodenum].start(); //accept하고 실행해줌
+						idle = false;
+						node[node[now_nodenum].node].set_status(1); // 받는 노드의 status 1로 변경
+						
+						linkfile.write(finish);
+						set_idle();
+					}catch(Exception e) {
+						e.printStackTrace();
 					}
 					
-				}
+					
+					
+					}
 				else {
-					if(status == true ) {//받는 중
+					String reject = SystemClock.print() + "Reject: Node" +now_nodenum +
+							"Data Send Request To Node" + node[now_nodenum].node+ "\n";
+							
+					try {
+							linkfile.write(reject);
+							
+						} catch (IOException e) {
+							e.printStackTrace(); 
+						}
+					
+					if(node[node[now_nodenum].node].get_status() == 1 ) {// 받는 중
+						//스레드 끝난 뒤 보내기
 						
 					}
-					else {
+					else {//보내는 중
 						
+						//BackoffTimer
 					}
 				}
 		
 			}
-			catch(InterruptedException e) {
-				System.out.println("Interrupted");
+			catch(Exception e) {
+				e.printStackTrace();
 			}
 		}
-	}
-	public void set_idle() {
-		/*@ node에서 set idle으로?*/
-		idle = true;
+		
+}
 	}
 	
 	class CSMACD {
