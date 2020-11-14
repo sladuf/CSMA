@@ -11,7 +11,7 @@ class Link implements Runnable{
 	
 	FileWriter linkfile;
 	static public boolean idle = true;
-	static public boolean status = false;
+	//static public boolean status = false;
 	
 	private int now_nodenum; /*@보내려는 node 이름 받음*/
 	
@@ -26,7 +26,7 @@ class Link implements Runnable{
 		for(int i = 0; i<5; i++)
 		{
 			node[i] = new Node(i+1,time);
-			/*@ node[4]는 now_connecting으로 사용*/
+			/*@ node[4]는 현재 보내고있는 노드 저장용으로 사용*/
 		}
 
 		
@@ -53,6 +53,7 @@ class Link implements Runnable{
 						e.printStackTrace();
 				}
 			}
+			else if(SystemClock.print().equals("01:00:000"));
 			for(int j = 0; j<5; j++) {
 				if(this.node[j].trans() == SystemClock.get()) { /* node가 보낼 시간 == System Clock => 전송요청 메세지
 					/*@ String sendReq : Link.txt 입력용 String*/
@@ -92,6 +93,7 @@ class Link implements Runnable{
 						
 						linkfile.write(finish);
 						idle = true;
+						node[node[now_nodenum].node].set_status(0);
 					}catch(Exception e) {
 						e.printStackTrace();
 					}
@@ -112,10 +114,15 @@ class Link implements Runnable{
 					
 					if(node[node[now_nodenum].node].get_status() == 1 ) {// 받는 중
 						//스레드 끝난 뒤 보내기
+						//끝난걸 어떻게 알지
 						
 					}
 					else {//보내는 중
 						
+						int back = (int)(Math.random() * 10) + 1;
+						BackoffTimer timer = new BackoffTimer();
+						Thread.sleep(timer.backoffTime(back));
+						//Thread sleep 대신 trans를 바꾸는식으로 해야하나?
 						//BackoffTimer
 					}
 				}
