@@ -1,4 +1,3 @@
-import java.util.Random;
 import java.lang.Thread;
 import java.util.Vector;
 import java.io.FileNotFoundException;
@@ -92,7 +91,7 @@ class Link implements Runnable{
 						node[node[now_nodenum].node].set_status(1); // 받는 노드의 status 1로 변경
 						
 						linkfile.write(finish);
-						set_idle();
+						idle = true;
 					}catch(Exception e) {
 						e.printStackTrace();
 					}
@@ -125,9 +124,7 @@ class Link implements Runnable{
 			catch(Exception e) {
 				e.printStackTrace();
 			}
-		}
-		
-}
+		}	
 	}
 	
 	class CSMACD {
