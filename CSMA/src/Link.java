@@ -63,7 +63,7 @@ class Link implements Runnable{
 					try {
 						linkfile.write(sendReq);
 					} catch (IOException e) {
-						e.printStackTrace();
+						e.printStackTrace(); 
 					}
 				}
 				node[5] = node[j];
