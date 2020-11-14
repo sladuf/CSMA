@@ -1,46 +1,88 @@
 import java.util.Random;
 import java.lang.Thread;
 import java.util.Vector;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
-
-//interface ChannelConstants{ int FREE = 0;  //Indicates Channel is free
-//int INUSE = 1; //Indicates Channel is being used
-//}
+import java.io.IOException;
+import java.io.File;
 
 
+ 
 class Link implements Runnable{
 	
 	FileWriter linkfile;
-	private Vector<Node> nodes;
 	static public boolean idle = true;
+	static public boolean status = false;
 	
-	static int ChannelStatus;
+	private int now_nodenum;
+	
+	Node node[] = new Node[5];
+	
 	
 	public Link() {
-		linkfile = new FileWriter("C://Test//Link.txt");
-		nodes = new Vector <Node>(4);
 		
+		new SystemClock();
+		
+		String time = SystemClock.print();
+		for(int i = 0; i<5; i++)
+		{
+			node[i] = new Node(i+1,time);
+			/*@ node[4]는 now_connecting으로 사용*/
+		}
+
+		
+		try { 
+			File link = new File("C:\\Test\\Link.txt");
+			linkfile = new FileWriter("C\\Test\\Link.txt");
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
-	public 
+	
 	public void run() {
-		if(systemClock == 0) {
-				linkfile.write("00:00:000 Link start\n");
-				linkfile.write("00:00: 000 System Clock Start");
-				
-		}
-		while(true) {
-			systemClock++;
-			Thread.sleep(rand);
-			try {
-				if(/*idle == true &&*/ChannelStatus == INUSE) {
+		
+		
+		for(int i = 0 ; i <= 1000*60 ; i++) {
+			SystemClock.set();
+	
+			if(SystemClock.get() == 0) {
+				try {
+					linkfile.write(SystemClock.print()+" Link start\n");
+					linkfile.write(SystemClock.print()+" System Clock Start\n");
+				}catch(IOException e) {
+						e.printStackTrace();
+				}
+			}
+			for(int j = 0; j<4; j++) {
+				if(this.node[j].time == SystemClock.get()) { /* node가 보낼 시간 == System Clock => 전송요청 메세지
+					/*@ String sendReq : Link.txt 입력용 String*/
+					String sendReq = SystemClock.print() + "Node"+ j + 
+							"Data Send Request To Node" + node[j].node+ "\n";
 					
-					 BackoffTimer timer = new BackoffTimer();
-					Thread.sleep();
-					linkfile.write();
+					try {
+						linkfile.write(sendReq);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+				node[5] = node[j];
+			}
+			
+			try {
+				if(idle == true) { // Link: idle
+					
+					String Accept = SystemClock.print() + "Accept: "+ node;
+					idle = false;
+						
+					}
+					
 				}
 				else {
-					if(ChannelStatus == FREE ) {
+					if(status == true ) {//받는 중
+						
+					}
+					else {
 						
 					}
 				}
@@ -51,16 +93,15 @@ class Link implements Runnable{
 			}
 		}
 	}
+	public void set_idle() {
+		/*@ node에서 set idle으로?*/
+		idle = true;
+	}
 	
 	class CSMACD {
-		public static void main(String args[]) {
-			/*
-			Node node1 = new Node("Node1");
-			Node node2 = new Node("Node2");
-			Node node3 = new Node("Node3");
-			Node node4 = new Node("Node4");
-			*/
+		public void main(String args[]) {
+			
+			Link link = new Link();
 		}
 	}
 }
-
