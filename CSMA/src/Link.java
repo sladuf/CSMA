@@ -59,54 +59,51 @@ class Link extends Thread{
 						e.printStackTrace();
 				}
 			}
-			for(int j = 1; j<5; j++) { 
-				if( this.node[j].trans() == SystemClock.get()) { /* node가 보낼 시간 == System Clock => 전송요청 메세지
+			for(int now_nodenum = 1; now_nodenum <5; now_nodenum++) { 
+				if( this.node[now_nodenum].trans() == SystemClock.get()) { /* node가 보낼 시간 == System Clock => 전송요청 메세지
 					/*@ String sendReq : Link.txt    입력용 String*/
-					String sendReq = SystemClock.print() + " Node"+ j + 
-							" Data Send Request To Node" + node[j].node+ "\n";
-					node[j].request();
+					String sendReq = SystemClock.print() + " Node"+ now_nodenum + 
+							" Data Send Request To Node" + node[now_nodenum].node+ "\n";
+					node[now_nodenum].request();
 					
 					try {
 						linkfile.write(sendReq);
 					} catch (IOException e) {
 						e.printStackTrace(); 
 					}
-					now_nodenum = j;
-					}
-				}
-				if(idle == true) { // Link: idle
+					if(idle == true) { // Link: idle
 					
 					try {
+						//if(node[now_nodenum].trans() == SystemClock.get()) {
+							//Accept 출력
+							String accept = SystemClock.print() + " Accept: Node"+ now_nodenum + 
+									" Data Send Request To Node"+ node[now_nodenum].node + "\n";
 						
-						//Accept 출력
-					String accept = SystemClock.print() + " Accept: Node"+ now_nodenum + 
-								" Data Send Request To Node"+ node[now_nodenum].node + "\n";
-						//끝났을 때 출력
-					
-						
-						/*file에 쓰고*/
-						linkfile.write(accept);
-						linkfile.flush();
+							/*file에 쓰고*/
+							linkfile.write(accept);
+							linkfile.flush();
 							
-						node[now_nodenum].start(); //accept하고 실행해줌
-						idle = false;
-						node[node[now_nodenum].node].set_status(1); // 받는 노드의 status 1로 변경
+							node[now_nodenum].start(); //accept하고 실행해줌
+							idle = false;
+							node[node[now_nodenum].node].set_status(1); // 받는 노드의 status 1로 변경
 							
-						//start가 끝나면
-						for(int j=0;j<5;j++) {SystemClock.set();}
-							
-						String finish = SystemClock.print() + " Node"+ now_nodenum + 
-								" Data Send Finished To Node"+node[now_nodenum].node + "\n";	
+							//start가 끝나면
+							for(int j=0;j<5;j++) {SystemClock.set();} //5 msec 증가
 						
-						linkfile.write(finish);
-						linkfile.flush();
+							//끝났을 때 출력	
+							String finish = SystemClock.print() + " Node"+ now_nodenum + 
+									" Data Send Finished To Node"+node[now_nodenum].node + "\n";	
 						
-						node[node[now_nodenum].node].set_status(0);
-						idle = true;	
+							linkfile.write(finish);
+							linkfile.flush();
+						
+							node[node[now_nodenum].node].set_status(0);
+							idle = true;
+							//}
 						}catch(Exception e) {
-							e.printStackTrace();
+						e.printStackTrace();
 						}
-					}
+				}
 				else {
 					String reject = SystemClock.print() + " Reject: Node" +now_nodenum +
 							" Data Send Request To Node" + node[now_nodenum].node+ "\n";
@@ -131,7 +128,12 @@ class Link extends Thread{
 						node[now_nodenum].backoff(timer.backoffTime(back));
 						}
 					}
+					//now_nodenum = j;
+					}
+				
 					
+				}
+				
 				SystemClock.set();
 				}
 			
