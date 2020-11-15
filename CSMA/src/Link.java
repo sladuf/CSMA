@@ -49,9 +49,22 @@ class Link extends Thread{
 	public void run() {
 		for(int i = 0 ; i <= 1000*60 ; i++) {
 			SystemClock.set();
+			/*데이터를 보내는 중이면 0이 아닌 node의 숫자가 now_nodenum임
+			 * data()는 데이터 전송 시간을 1초씩 늘려줌 (5초가 되면 0으로 바뀌기 때문에 0과 비교)
+			 */
 			if(now_nodenum != 0) {
 				node[now_nodenum].data();
 				if(node[now_nodenum].suc == 0) {
+					String finish = SystemClock.print() + "Node"+ now_nodenum+ 
+							"Data Send Finished To Node"+node[now_nodenum].node+"\n";
+					//start가 끝나면
+					try {
+						linkfile.write(finish);
+						idle = true;
+						node[node[now_nodenum].node].set_status(0);
+					}catch(Exception e) {
+						e.printStackTrace();
+						}
 					now_nodenum = 0;
 				}
 			}
@@ -70,7 +83,6 @@ class Link extends Thread{
 					String sendReq = SystemClock.print() + "Node"+ j + 
 							"Data Send Request To Node" + node[j].node+ "\n";
 					node[j].request();
-					
 					try {
 						linkfile.write(sendReq);
 					} catch (IOException e) {
@@ -82,8 +94,6 @@ class Link extends Thread{
 							String accept = SystemClock.print() + "Accept: Node"+ j+ 
 									"Data Send Request To Node"+node[j].node +"\n";
 							//끝났을 때 출력
-							String finish = SystemClock.print() + "Node"+ j+ 
-									"Data Send Finished To Node"+node[j].node+"\n";
 							/*file에 쓰고*/
 							try {
 								linkfile.write(accept);
@@ -97,10 +107,6 @@ class Link extends Thread{
 								idle = false;
 								node[node[j].node].set_status(1); // 받는 노드의 status 1로 변경
 								
-								//start가 끝나면
-								linkfile.write(finish);
-								idle = true;
-								node[node[j].node].set_status(0);
 								}catch(Exception e) {
 								e.printStackTrace();
 								}
