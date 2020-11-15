@@ -47,9 +47,8 @@ class Link extends Thread{
 	
 	
 	public void run() {
-		
-		for(int i = 0 ; i <= 1000*60 ; i++) {
-			SystemClock.set();
+		while(SystemClock.get()<1000*60){
+			//SystemClock.set();
 	
 			if(SystemClock.print().equals("01:00:000"))//01:00:000에 보내기
 			{
@@ -60,11 +59,12 @@ class Link extends Thread{
 						e.printStackTrace();
 				}
 			}
-			for(int j = 1; j<5; j++) {
-				if(this.node[j].trans() == SystemClock.get()) { /* node가 보낼 시간 == System Clock => 전송요청 메세지
-					/*@ String sendReq : Link.txt 입력용 String*/
-					String sendReq = SystemClock.print() + "Node"+ j + 
-							"Data Send Request To Node" + node[j].node+ "\n";
+			for(int j = 1; j<5; j++) { 
+				if( this.node[j].trans() == SystemClock.get()) { 
+					/* node가 보낼 시간 == System Clock => 전송요청 메세지
+					/*@ String sendReq : Link.txt    입력용 String*/
+					String sendReq = SystemClock.print() + " Node"+ j + 
+							" Data Send Request To Node" + node[j].node+ "\n";
 					node[j].request();
 					
 					try {
@@ -72,69 +72,70 @@ class Link extends Thread{
 					} catch (IOException e) {
 						e.printStackTrace(); 
 					}
+					now_nodenum = j;
+					}
 				}
-				now_nodenum = j;
-				try {
-					if(idle == true) { // Link: idle
-						//Accept 출력
-						String accept = SystemClock.print() + " Accept: Node"+ now_nodenum+ 
-								"Data Send Request To Node"+node[now_nodenum].node +"\n";
-						//끝났을 때 출력
-						String finish = SystemClock.print() + " Node"+ now_nodenum+ 
-								"Data Send Finished To Node"+node[now_nodenum].node+"\n";
-						/*file에 쓰고*/
-						try {
-							linkfile.write(accept);
-							} catch (IOException e) {
-							e.printStackTrace(); 
-							}
-						try {
-							
-							node[now_nodenum].start(); //accept하고 실행해줌
-							idle = false;
-							node[node[now_nodenum].node].set_status(1); // 받는 노드의 status 1로 변경
-							
-							/*start하고 1초씩 지나서 5초지나면 finish해야하는데 finish의 적절한 위치를 찾아야 함
-							 * 
-							 * 참고로 두개의 Thread가 반복문을 실행중이면 한개씩 실행되므로
-							 * 이 점 참고하고 이용해서 프로그래밍 하면 될듯 한데ㅠ
-							 */ 
-							
-							linkfile.write(finish);
-							idle = true;
-							node[node[now_nodenum].node].set_status(0);
-							}catch(Exception e) {
-							e.printStackTrace();
-							}
-						}
-					else {
-						String reject = SystemClock.print() + "Reject: Node" +now_nodenum +
-								"Data Send Request To Node" + node[now_nodenum].node+ "\n";
-								
-						try {
-								linkfile.write(reject);
-								
-							} catch (IOException e) {
-								e.printStackTrace(); 
-							}
+				if(idle == true) { // Link: idle
+					
+					try {
 						
-						if(node[now_nodenum].get_status() == 1 ) {// 받는 중
-							/* node가 data를 전송중인 숫자를 suc으로 설정
-							 * suc == 0 이면 데이터 전송 받지 않는 중
-							 */
-							int temp = node[now_nodenum].suc; //temp는 추가 해 줄 time
-							node[now_nodenum].time += temp;
-						}
-						else {//보내는 중
+						//Accept 출력
+					String accept = SystemClock.print() + " Accept: Node"+ now_nodenum + 
+								" Data Send Request To Node"+ node[now_nodenum].node + "\n";
+						//끝났을 때 출력
+					
+						
+						/*file에 쓰고*/
+						linkfile.write(accept);
+						linkfile.flush();
 							
-							int back = (int)(Math.random() * 10) + 1;
-							node[now_nodenum].backoff(timer.backoffTime(back));
-							}
+						node[now_nodenum].start(); //accept하고 실행해줌
+						idle = false;
+						node[node[now_nodenum].node].set_status(1); // 받는 노드의 status 1로 변경
+							
+						//start가 끝나면
+						for(int j=0;j<5;j++) {SystemClock.set();}
+							
+						String finish = SystemClock.print() + " Node"+ now_nodenum + 
+								" Data Send Finished To Node"+node[now_nodenum].node + "\n";	
+						
+						linkfile.write(finish);
+						linkfile.flush();
+						
+						node[node[now_nodenum].node].set_status(0);
+						idle = true;	
+						}catch(Exception e) {
+							e.printStackTrace();
 						}
-					}catch(Exception e) {
-						e.printStackTrace();
+					}
+				else {
+					String reject = SystemClock.print() + " Reject: Node" +now_nodenum +
+							" Data Send Request To Node" + node[now_nodenum].node+ "\n";
+								
+					try {
+							linkfile.write(reject);
+							
+						} catch (IOException e) {
+							e.printStackTrace(); 
 						}
+						
+					if(node[now_nodenum].get_status() == 1 ) {// 받는 중
+						/* node가 data를 전송중인 숫자를 suc으로 설정
+						 * suc == 0 이면 데이터 전송 받지 않는 중
+						 */
+						int temp = node[now_nodenum].suc; //temp는 추가 해 줄 time
+						node[now_nodenum].time += temp;
+					}
+					else {//보내는 중
+						
+						int back = (int)(Math.random() * 10) + 1;
+						node[now_nodenum].backoff(timer.backoffTime(back));
+						}
+					}
+					
+				SystemClock.set();
 				}
+			
 			}	
 		}
-	}
+	//}

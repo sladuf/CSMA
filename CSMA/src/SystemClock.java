@@ -22,16 +22,16 @@ public class SystemClock {
 		int temp = msec;
 		temp += sec * 1000;
 		return temp;
-	}
-	
+	} 
+	 
 	public static void set() {
 		msec += 1;
-		if (msec == 1000) {
-			msec = 0;
+		if (msec > 1000) {
+			msec = msec % 1000;
 			sec += 1;
-		}
-		if (sec == 60) {
-			sec = 0;
+		} 
+		if (sec > 60) {
+			sec =sec % 60;
 			min = 1;
 		}
 			
