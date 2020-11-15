@@ -78,22 +78,21 @@ class Node extends Thread{
 		 * 
 		 */
 		try{
-
-            fw.write(SystemClock.print()+ " Data Send Request Accept from Link\n");
-            fw.flush();
-             
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-		for(int i = 0 ; i <= 5 ; i++) {
-			suc = i;
-			if(i == 5) {
-				success();
-				suc = 0;
-			}
+			fw.write(SystemClock.print()+ " Data Send Request Accept from Link\n");
+	        fw.flush();
+	        data();
+	        }catch(Exception e){
+	            e.printStackTrace();
+	            }
+		}
+	
+	public void data() {
+		suc+=1;
+		if(suc == 5) {
+			success();
+			suc = 0;
 		}
 	}
-	
 	public void success() {
 		try{
 
