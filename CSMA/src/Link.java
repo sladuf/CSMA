@@ -83,6 +83,7 @@ class Link extends Thread{
 					String sendReq = SystemClock.print() + "Node"+ j + 
 							"Data Send Request To Node" + node[j].node+ "\n";
 					node[j].request();
+					
 					try {
 						linkfile.write(sendReq);
 					} catch (IOException e) {
