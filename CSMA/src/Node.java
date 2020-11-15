@@ -7,9 +7,11 @@ class Node extends Thread{
 	private int name;
 	private final int num = 5; //5msec data
 	private String fileName;
-	int time;
-	int node;
+	public int time;
+	public int node;
 	int status;
+	public int suc = 0;
+	FileWriter fw;
 	
 	//Node 객체
 	Node(int name, String clock){
@@ -19,7 +21,7 @@ class Node extends Thread{
         try{
             
             File file = new File(fileName);
-            FileWriter fw = new FileWriter(file, false);
+            fw = new FileWriter(file, false);
              
             fw.write(clock+" Node"+name+" Start\n");
             fw.flush();
@@ -29,9 +31,40 @@ class Node extends Thread{
         }
         
         this.time = (int)(Math.random() * 100); //데이터 보낼 시간
-		this.node = (int)(Math.random() * 5) + 1; //보낼 노드
+		this.node = (int)(Math.random() * 4) + 1; //보낼 노드
 	}
 	
+	public void request() {
+		try{
+
+            fw.write(SystemClock.print()+ " Data Send Request To Node" + node + "\n");
+            fw.flush();
+             
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+	}
+	public void reject() {
+		try{
+
+            fw.write(SystemClock.print()+ " Data Send Request Reject from Link\n");
+            fw.flush();
+             
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+	}
+	public void backoff(int clock) {
+		try{
+
+            fw.write(SystemClock.print()+ " Exponential Back-off Time : " +clock+ " msec\n");
+            fw.flush();
+             
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+		time += clock;
+	}
 	public int trans() {
 		/* @param trans() : data 전송할 시간 return
 		 * @param time : data 전송할 시간(객체 생성시 자동 초기화)
@@ -44,20 +77,27 @@ class Node extends Thread{
 		/* @param run() : Link에서 Accept를 받고 실행하는 method
 		 * 
 		 */
+		try{
+
+            fw.write(SystemClock.print()+ " Data Send Request Accept from Link\n");
+            fw.flush();
+             
+        }catch(Exception e){
+            e.printStackTrace();
+        }
 		for(int i = 0 ; i <= 5 ; i++) {
+			suc = i;
 			if(i == 5) {
 				success();
+				suc = 0;
 			}
 		}
 	}
 	
 	public void success() {
 		try{
-            
-            File file = new File(fileName);
-            FileWriter fw = new FileWriter(file, true);
-             
-            fw.write(SystemClock.print()+ " Data Send Finished To Node" +node + "/n");
+
+            fw.write(SystemClock.print()+ " Data Send Finished To Node" +node + "\n");
             fw.flush();
              
         }catch(Exception e){
@@ -97,4 +137,3 @@ class Node extends Thread{
 	        }
 	        */
 	}
-}
