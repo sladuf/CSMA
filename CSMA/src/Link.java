@@ -77,10 +77,10 @@ class Link extends Thread{
 				try {
 					if(idle == true) { // Link: idle
 						//Accept 출력
-						String accept = SystemClock.print() + "Accept: Node"+ now_nodenum+ 
+						String accept = SystemClock.print() + " Accept: Node"+ now_nodenum+ 
 								"Data Send Request To Node"+node[now_nodenum].node +"\n";
 						//끝났을 때 출력
-						String finish = SystemClock.print() + "Node"+ now_nodenum+ 
+						String finish = SystemClock.print() + " Node"+ now_nodenum+ 
 								"Data Send Finished To Node"+node[now_nodenum].node+"\n";
 						/*file에 쓰고*/
 						try {
@@ -94,7 +94,12 @@ class Link extends Thread{
 							idle = false;
 							node[node[now_nodenum].node].set_status(1); // 받는 노드의 status 1로 변경
 							
-							//start가 끝나면
+							/*start하고 1초씩 지나서 5초지나면 finish해야하는데 finish의 적절한 위치를 찾아야 함
+							 * 
+							 * 참고로 두개의 Thread가 반복문을 실행중이면 한개씩 실행되므로
+							 * 이 점 참고하고 이용해서 프로그래밍 하면 될듯 한데ㅠ
+							 */ 
+							
 							linkfile.write(finish);
 							idle = true;
 							node[node[now_nodenum].node].set_status(0);

@@ -30,7 +30,7 @@ class Node extends Thread{
             e.printStackTrace();
         }
         
-        this.time = (int)(Math.random() * 100); //데이터 보낼 시간
+        this.time = (int)(Math.random() * 1000*30); //데이터 보낼 시간
 		this.node = (int)(Math.random() * 4) + 1; //보낼 노드
 	}
 	
@@ -116,24 +116,4 @@ class Node extends Thread{
 	public int get_status() {
 		return status;
 	}
-	
-			
-			/* Link에 요청 -> True or False
-			 * if == True 이면, Accept text 띄우고 data 5msec 전송
-			 * SystemClock += 5 msec
-			 * if == False 이면, BackOffTimer 실행하고 다시 반복
-			System.out.println(name+ ") Data Send Request Accept from Link");
-			System.out.println(name + ") Data Send Finished To Node" + node);
-			//else if == False
-			System.out.println(name + ") Data send Request Reject from Link");
-			BackoffTimer backoff = new BackoffTimer();
-			try {
-	        	BackoffTimer timer = new BackoffTimer();
-	        	int back = (int)(Math.random() * 10) + 1;
-	            Thread.sleep(timer.backoffTime(back));
-	            System.out.println(name + ") Exponential Back-off Time : " + back + " msec");
-	        } catch (InterruptedException e) {
-	            System.err.println("Interrupted: Interrupt exception");
-	        }
-	        */
-	}
+}
