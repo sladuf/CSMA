@@ -1,6 +1,4 @@
 import java.lang.Thread;
-import java.util.Vector;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.File;
@@ -47,18 +45,17 @@ class Link extends Thread{
 	
 	
 	public void run() {
-		for(int i = 0 ; i <= 1000*60 ; i++) {
+		while(SystemClock.get() <= 1000*60) {
 			SystemClock.set();
+			//try {linkfile.write(SystemClock.print()+"\n");}catch(Exception e) {e.printStackTrace();}
 			/*데이터를 보내는 중이면 0이 아닌 node의 숫자가 now_nodenum임
 			 * data()는 데이터 전송 시간을 1초씩 늘려줌 (5초가 되면 0으로 바뀌기 때문에 0과 비교)
 			 */
 			if(now_nodenum != 0) {
 				node[now_nodenum].data();
-				//밑에 print code 실행 잘 되는지 콘솔로 확인할라고 임시로 써놓음 나중에 지울거임!
-				System.out.println(SystemClock.print()+" node is " + now_nodenum);
 				if(node[now_nodenum].suc == 0) {
-					String finish = SystemClock.print() + "Node"+ now_nodenum+ 
-							"Data Send Finished To Node"+node[now_nodenum].node+"\n";
+					String finish = SystemClock.print() + " Node"+ now_nodenum+ 
+							" Data Send Finished To Node"+node[now_nodenum].node+"\n";
 					//start가 끝나면
 					try {
 						linkfile.write(finish);
@@ -82,36 +79,43 @@ class Link extends Thread{
 			for(int j = 1; j<5; j++) {
 				if(this.node[j].trans() == SystemClock.get()) { /* node가 보낼 시간 == System Clock => 전송요청 메세지
 					/*@ String sendReq : Link.txt 입력용 String*/
-					String sendReq = SystemClock.print() + "Node"+ j + 
-							"Data Send Request To Node" + node[j].node+ "\n";
-					node[j].request();
-					
+					String sendReq = SystemClock.print() + " Node"+ j + 
+							" Data Send Request To Node" + node[j].node+ "\n";
 					try {
+						node[j].request();
 						linkfile.write(sendReq);
+						linkfile.flush();
+						
 					} catch (IOException e) {
 						e.printStackTrace(); 
-					}
-					try {
-						if(idle == true) { // Link: idle
+					}if(idle == true){// Link: idle
+					 
+						try { 
 							//Accept 출력
-							String accept = SystemClock.print() + "Accept: Node"+ j+ 
-									"Data Send Request To Node"+node[j].node +"\n";
+							String accept = SystemClock.print() + " Accept: Node"+ j+ 
+									" Data Send Request To Node"+node[j].node +"\n";
 							//끝났을 때 출력
 							/*file에 쓰고*/
-							try {
+							
+								
 								linkfile.write(accept);
+								
 								node[j].start(); //accept하고 실행해줌
+								//Thread.sleep(5);
 								now_nodenum = j;
 								idle = false;
 								node[node[j].node].set_status(1); // 받는 노드의 status 1로 변경
 								
+								break;
+								
 								}catch(Exception e) {
 								e.printStackTrace();
 								}
-							}
+						}
+							
 						else {
-							String reject = SystemClock.print() + "Reject: Node" +j +
-									"Data Send Request To Node" + node[j].node+ "\n";
+							String reject = SystemClock.print() + " Reject: Node" +j +
+									" Data Send Request To Node" + node[j].node+ "\n";
 									
 							try {
 									linkfile.write(reject);
@@ -126,18 +130,21 @@ class Link extends Thread{
 								 */
 								int temp = node[j].suc; //temp는 추가 해 줄 time
 								node[j].time += temp;
+								break;
 							}
 							else {//보내는 중
 								
 								int back = (int)(Math.random() * 10) + 1;
 								node[j].backoff(timer.backoffTime(back));
+								break;
 								}
 							}
-						}catch(Exception e) {
-							e.printStackTrace();
+						}//catch(Exception e) {
+							//e.printStackTrace();
 						}
 				}
 			}
-		}
+		//}
 	}
-}
+//}
+
