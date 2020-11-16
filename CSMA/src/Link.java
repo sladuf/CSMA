@@ -1,6 +1,4 @@
 import java.lang.Thread;
-import java.util.Vector;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.File;
@@ -13,7 +11,6 @@ class Link extends Thread{
 	public static boolean idle = true;
 	//static public boolean status = false;
 	
-	private int now_nodenum = 0; /*@º¸³»·Á´Â node ÀÌ¸§ ¹ŞÀ½*/
 	
 	Node node[] = new Node[5];
 	BackoffTimer timer = new BackoffTimer();
@@ -27,8 +24,8 @@ class Link extends Thread{
 		for(int i = 1; i<5; i++)
 		{
 			node[i] = new Node(i,time);
-			/*@ node[0] ÇöÀç º¸³»°íÀÖ´Â ³ëµå ÀúÀå¿ëÀ¸·Î »ç¿ë
-			 * index == node ¹øÈ£ ÀÏÄ¡ÇÔ
+			/*@ node[0] í˜„ì¬ ë³´ë‚´ê³ ìˆëŠ” ë…¸ë“œ ì €ì¥ìš©ìœ¼ë¡œ ì‚¬ìš©
+			 * index == node ë²ˆí˜¸ ì¼ì¹˜í•¨
 			 */
 		}
 
@@ -47,28 +44,11 @@ class Link extends Thread{
 	
 	
 	public void run() {
-		for(int i = 0 ; i <= 1000*60 ; i++) {
-			SystemClock.set();
-			/*µ¥ÀÌÅÍ¸¦ º¸³»´Â ÁßÀÌ¸é 0ÀÌ ¾Æ´Ñ nodeÀÇ ¼ıÀÚ°¡ now_nodenumÀÓ
-			 * data()´Â µ¥ÀÌÅÍ Àü¼Û ½Ã°£À» 1ÃÊ¾¿ ´Ã·ÁÁÜ (5ÃÊ°¡ µÇ¸é 0À¸·Î ¹Ù²î±â ¶§¹®¿¡ 0°ú ºñ±³)
-			 */
-			if(now_nodenum != 0) {
-				node[now_nodenum].data();
-				if(node[now_nodenum].suc == 0) {
-					String finish = SystemClock.print() + "Node"+ now_nodenum+ 
-							"Data Send Finished To Node"+node[now_nodenum].node+"\n";
-					//start°¡ ³¡³ª¸é
-					try {
-						linkfile.write(finish);
-						idle = true;
-						node[node[now_nodenum].node].set_status(0);
-					}catch(Exception e) {
-						e.printStackTrace();
-						}
-					now_nodenum = 0;
-				}
-			}
-			if(SystemClock.print().equals("01:00:000"))//01:00:000¿¡ º¸³»±â
+		synchronized(this) {
+		while(SystemClock.get()<1000*60){
+			//SystemClock.set();
+	
+			if(SystemClock.print().equals("01:00:000"))//01:00:000ì— ë³´ë‚´ê¸°
 			{
 				try {
 					linkfile.write(SystemClock.print()+" System Clock Finished\n");
@@ -77,70 +57,111 @@ class Link extends Thread{
 						e.printStackTrace();
 				}
 			}
-			for(int j = 1; j<5; j++) {
-				if(this.node[j].trans() == SystemClock.get()) { /* node°¡ º¸³¾ ½Ã°£ == System Clock => Àü¼Û¿äÃ» ¸Ş¼¼Áö
-					/*@ String sendReq : Link.txt ÀÔ·Â¿ë String*/
-					String sendReq = SystemClock.print() + "Node"+ j + 
-							"Data Send Request To Node" + node[j].node+ "\n";
-					node[j].request();
+			for(int now_nodenum = 1; now_nodenum <5; now_nodenum++) { 
+				if( this.node[now_nodenum].trans() == SystemClock.get()) { /* nodeê°€ ë³´ë‚¼ ì‹œê°„ == System Clock => ì „ì†¡ìš”ì²­ ë©”ì„¸ì§€
+					/*@ String sendReq : Link.txt    ì…ë ¥ìš© String*/
+					String sendReq = SystemClock.print() + " Node"+ now_nodenum + 
+							" Data Send Request To Node" + node[now_nodenum].node+ "\n";
+					node[now_nodenum].request();
 					
 					try {
 						linkfile.write(sendReq);
 					} catch (IOException e) {
 						e.printStackTrace(); 
 					}
+					if(idle == true) { // Link: idle
+					
 					try {
-						if(idle == true) { // Link: idle
-							//Accept Ãâ·Â
-							String accept = SystemClock.print() + "Accept: Node"+ j+ 
-									"Data Send Request To Node"+node[j].node +"\n";
-							//³¡³µÀ» ¶§ Ãâ·Â
-							/*file¿¡ ¾²°í*/
-							try {
-								linkfile.write(accept);
-								} catch (IOException e) {
-								e.printStackTrace(); 
-								}
-							try {
-								
-								node[j].start(); //acceptÇÏ°í ½ÇÇàÇØÁÜ
-								now_nodenum = j;
-								idle = false;
-								node[node[j].node].set_status(1); // ¹Ş´Â ³ëµåÀÇ status 1·Î º¯°æ
-								
-								}catch(Exception e) {
-								e.printStackTrace();
-								}
-							}
-						else {
-							String reject = SystemClock.print() + "Reject: Node" +j +
-									"Data Send Request To Node" + node[j].node+ "\n";
-									
-							try {
-									linkfile.write(reject);
-									
-								} catch (IOException e) {
-									e.printStackTrace(); 
-								}
+						
+							//Accept ì¶œë ¥
+							String accept = SystemClock.print() + " Accept: Node"+ now_nodenum + 
+									" Data Send Request To Node"+ node[now_nodenum].node + "\n";
+						
+							/*fileì— ì“°ê³ */
 							
-							if(node[j].get_status() == 1 ) {// ¹Ş´Â Áß
-								/* node°¡ data¸¦ Àü¼ÛÁßÀÎ ¼ıÀÚ¸¦ sucÀ¸·Î ¼³Á¤
-								 * suc == 0 ÀÌ¸é µ¥ÀÌÅÍ Àü¼Û ¹ŞÁö ¾Ê´Â Áß
-								 */
-								int temp = node[j].suc; //temp´Â Ãß°¡ ÇØ ÁÙ time
-								node[j].time += temp;
-							}
-							else {//º¸³»´Â Áß
-								
-								int back = (int)(Math.random() * 10) + 1;
-								node[j].backoff(timer.backoffTime(back));
-								}
-							}
+							linkfile.write(accept);
+							linkfile.flush();
+							
+							node[now_nodenum].start(); //acceptí•˜ê³  ì‹¤í–‰í•´ì¤Œ
+							Thread.sleep(5);
+							
+							idle = false;
+							
+							node[node[now_nodenum].node].set_status(1); // ë°›ëŠ” ë…¸ë“œì˜ status 1ë¡œ ë³€ê²½
+							
+							//startê°€ ëë‚˜ë©´
+							for(int j=1;j<5;j++){
+								if(node[j].trans() == SystemClock.get())
+									break;
+								SystemClock.set();
+							} //5 msec ì¦ê°€
+							
+							//ëë‚¬ì„ ë•Œ ì¶œë ¥	
+							String finish = SystemClock.print() + " Node"+ now_nodenum + 
+									" Data Send Finished To Node"+node[now_nodenum].node + "\n";	
+							node[node[now_nodenum].node].set_status(0);
+							Thread.sleep(1);
+							linkfile.write(finish);
+							linkfile.flush();
+						
+							
+							idle = true;
 						}catch(Exception e) {
-							e.printStackTrace();
+						e.printStackTrace();
 						}
 				}
-			}
+				else {
+					String reject = SystemClock.print() + " Reject: Node" +now_nodenum +
+							" Data Send Request To Node" + node[now_nodenum].node+ "\n";
+								
+					try {
+							linkfile.write(reject);
+							
+						} catch (IOException e) {
+							e.printStackTrace(); 
+						}
+						
+					if(node[now_nodenum].get_status() == 1 ) {// ë°›ëŠ” ì¤‘
+						/* nodeê°€ dataë¥¼ ì „ì†¡ì¤‘ì¸ ìˆ«ìë¥¼ sucìœ¼ë¡œ ì„¤ì •
+						 * suc == 0 ì´ë©´ ë°ì´í„° ì „ì†¡ ë°›ì§€ ì•ŠëŠ” ì¤‘
+						 */
+						int temp = node[now_nodenum].suc; //tempëŠ” ì¶”ê°€ í•´ ì¤„ time
+						node[now_nodenum].time += temp;
+					}
+					else {//ë³´ë‚´ëŠ” ì¤‘
+						
+						int back = (int)(Math.random() * 10) + 1;
+						node[now_nodenum].backoff(timer.backoffTime(back));
+						}
+					}
+					//now_nodenum = j;
+					}
+				
+					
+				}
+				
+				SystemClock.set();
+				//
+				if(SystemClock.print().equals("01:00:000"))//01:00:000ì— ë³´ë‚´ê¸°
+				{
+					try {
+						linkfile.write(SystemClock.print()+" System Clock Finished\n");
+						linkfile.write(SystemClock.print()+" Link Finished\n");
+					}catch(IOException e) {
+							e.printStackTrace();
+					}
+				}
+				
+				
+				
+				}
+			
+			}	
+		try {
+			linkfile.write(SystemClock.print()+" System Clock Finished\n");
+			linkfile.write(SystemClock.print()+" Link Finished\n");
+		}catch(IOException e) {
+				e.printStackTrace();
+		}
 		}
 	}
-}
