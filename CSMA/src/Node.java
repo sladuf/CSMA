@@ -31,7 +31,9 @@ class Node extends Thread{
         }
         
         this.time = (int)(Math.random() * 1000*30); //데이터 보낼 시간
+        //this.time = (int)(Math.random() * 100); //데이터 보낼 시간 reject test용 
 		this.node = (int)(Math.random() * 4) + 1; //보낼 노드
+		System.out.println(this.time);
 	}
 	
 	public void request() {
