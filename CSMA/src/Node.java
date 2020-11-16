@@ -2,7 +2,6 @@ import java.io.File;
 import java.io.FileWriter;
 
 class Node extends Thread{
-	//println() -> 나중에 텍스트파일에 넣는 함수로 다 교체할꺼임
 	
 	private int name;
 	private final int num = 5; //5msec data
@@ -80,7 +79,6 @@ class Node extends Thread{
 		try{
 			fw.write(SystemClock.print()+ " Data Send Request Accept from Link\n");
 	        fw.flush();
-	        data();
 	        }catch(Exception e){
 	            e.printStackTrace();
 	            }

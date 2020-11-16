@@ -54,6 +54,8 @@ class Link extends Thread{
 			 */
 			if(now_nodenum != 0) {
 				node[now_nodenum].data();
+				//밑에 print code 실행 잘 되는지 콘솔로 확인할라고 임시로 써놓음 나중에 지울거임!
+				System.out.println(SystemClock.print()+" node is " + now_nodenum);
 				if(node[now_nodenum].suc == 0) {
 					String finish = SystemClock.print() + "Node"+ now_nodenum+ 
 							"Data Send Finished To Node"+node[now_nodenum].node+"\n";
@@ -98,11 +100,6 @@ class Link extends Thread{
 							/*file에 쓰고*/
 							try {
 								linkfile.write(accept);
-								} catch (IOException e) {
-								e.printStackTrace(); 
-								}
-							try {
-								
 								node[j].start(); //accept하고 실행해줌
 								now_nodenum = j;
 								idle = false;
