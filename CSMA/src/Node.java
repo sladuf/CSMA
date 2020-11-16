@@ -2,7 +2,7 @@ import java.io.File;
 import java.io.FileWriter;
 
 class Node extends Thread{
-	//println() -> ³ªÁß¿¡ ÅØ½ºÆ®ÆÄÀÏ¿¡ ³Ö´Â ÇÔ¼ö·Î ´Ù ±³Ã¼ÇÒ²¨ÀÓ
+	//println() -> ë‚˜ì¤‘ì— í…ìŠ¤íŠ¸íŒŒì¼ì— ë„£ëŠ” í•¨ìˆ˜ë¡œ ë‹¤ êµì²´í• êº¼ì„
 	
 	private int name;
 	private final int num = 5; //5msec data
@@ -13,7 +13,7 @@ class Node extends Thread{
 	public int suc = 0;
 	FileWriter fw;
 	
-	//Node °´Ã¼
+	//Node ê°ì²´
 	Node(int name, String clock){
 		this.name = name;
 		this.fileName = "C://Test//Node"+name+".txt";
@@ -25,13 +25,15 @@ class Node extends Thread{
              
             fw.write(clock+" Node"+name+" Start\n");
             fw.flush();
+            
              
         }catch(Exception e){
             e.printStackTrace();
         }
         
-        this.time = (int)(Math.random() * 1000*30); //µ¥ÀÌÅÍ º¸³¾ ½Ã°£
-		this.node = (int)(Math.random() * 4) + 1; //º¸³¾ ³ëµå
+        this.time = (int)(Math.random() * 100); //ë°ì´í„° ë³´ë‚¼ ì‹œê°„
+		this.node = (int)(Math.random() * 4) + 1; //ë³´ë‚¼ ë…¸ë“œ
+		System.out.println(time);
 	}
 	
 	public void request() {
@@ -66,36 +68,38 @@ class Node extends Thread{
 		time += clock;
 	}
 	public int trans() {
-		/* @param trans() : data Àü¼ÛÇÒ ½Ã°£ return
-		 * @param time : data Àü¼ÛÇÒ ½Ã°£(°´Ã¼ »ı¼º½Ã ÀÚµ¿ ÃÊ±âÈ­)
+		/* @param trans() : data ì „ì†¡í•  ì‹œê°„ return
+		 * @param time : data ì „ì†¡í•  ì‹œê°„(ê°ì²´ ìƒì„±ì‹œ ìë™ ì´ˆê¸°í™”)
 		 */
 		return time;
 	}
 		
 	
 	public void run() {
-		/* @param run() : Link¿¡¼­ Accept¸¦ ¹Ş°í ½ÇÇàÇÏ´Â method
+		/* @param run() : Linkì—ì„œ Acceptë¥¼ ë°›ê³  ì‹¤í–‰í•˜ëŠ” method
 		 * 
 		 */
 		try{
-			fw.write(SystemClock.print()+ " Data Send Request Accept from Link\n");
-	        fw.flush();
-	        data();
-	        }catch(Exception e){
-	            e.printStackTrace();
-	            }
-		}
-	
-	public void data() {
-		suc+=1;
-		if(suc == 5) {
-			success();
-			suc = 0;
+
+            fw.write(SystemClock.print()+ " Data Send Request Accept from Link\n");
+            fw.flush();
+            Thread.sleep(5);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+		
+		for(int i = 0 ; i <= 5 ; i++) {
+			suc = i;
+			if(i == 5) {
+				success();
+				suc = 0;
+			}
 		}
 	}
+	
 	public void success() {
 		try{
-
+			
             fw.write(SystemClock.print()+ " Data Send Finished To Node" +node + "\n");
             fw.flush();
              
@@ -106,8 +110,8 @@ class Node extends Thread{
 	
 	public void set_status(int status) {
 		/* 
-		 * Link¿¡¼­ AcceptÇÒ ¶§, Node2 -> Node3ÀÌ¸é Node3.set_status(1) À» ÇØÁà¾ßÇÔ
-		 * Link¿¡¼­ 
+		 * Linkì—ì„œ Acceptí•  ë•Œ, Node2 -> Node3ì´ë©´ Node3.set_status(1) ì„ í•´ì¤˜ì•¼í•¨
+		 * Linkì—ì„œ 
 		 */
 		this.status = status;
 	}
@@ -115,4 +119,24 @@ class Node extends Thread{
 	public int get_status() {
 		return status;
 	}
-}
+	
+			
+			/* Linkì— ìš”ì²­ -> True or False
+			 * if == True ì´ë©´, Accept text ë„ìš°ê³  data 5msec ì „ì†¡
+			 * SystemClock += 5 msec
+			 * if == False ì´ë©´, BackOffTimer ì‹¤í–‰í•˜ê³  ë‹¤ì‹œ ë°˜ë³µ
+			System.out.println(name+ ") Data Send Request Accept from Link");
+			System.out.println(name + ") Data Send Finished To Node" + node);
+			//else if == False
+			System.out.println(name + ") Data send Request Reject from Link");
+			BackoffTimer backoff = new BackoffTimer();
+			try {
+	        	BackoffTimer timer = new BackoffTimer();
+	        	int back = (int)(Math.random() * 10) + 1;
+	            Thread.sleep(timer.backoffTime(back));
+	            System.out.println(name + ") Exponential Back-off Time : " + back + " msec");
+	        } catch (InterruptedException e) {
+	            System.err.println("Interrupted: Interrupt exception");
+	        }
+	        */
+	}
