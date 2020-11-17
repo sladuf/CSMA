@@ -45,7 +45,7 @@ class Link extends Thread{
 	
 	
 	public void run() {
-		while(SystemClock.get() < 1000*60) {
+		while(SystemClock.get() < 1000*60 | now_nodenum != 0) {
 			SystemClock.set();
 			//try {linkfile.write(SystemClock.print()+"\n");}catch(Exception e) {e.printStackTrace();}
 			/*데이터를 보내는 중이면 0이 아닌 node의 숫자가 now_nodenum임
@@ -68,16 +68,6 @@ class Link extends Thread{
 						}
 					idle = true;
 					now_nodenum = 0;
-				}
-			}
-			if(SystemClock.get() >= 1000*60)//01:00:000 이상일 때 보내기
-			{
-				try {
-					linkfile.write(SystemClock.print()+" System Clock Finished\n");
-					linkfile.write(SystemClock.print()+" Link Finished\n");
-					linkfile.flush();
-				}catch(IOException e) {
-						e.printStackTrace();
 				}
 			}
 			for(int j = 1; j<5; j++) {
@@ -148,12 +138,21 @@ class Link extends Thread{
 								node[j].backoff(backofftime);
 								//break;
 								}
-							}
-						}//catch(Exception e) {
-							//e.printStackTrace();
 						}
-				}
+				}//catch(Exception e) {
+							//e.printStackTrace();
 			}
-		//}
+		}
+		if(SystemClock.get() >= 1000*60)//01:00:000 이상일 때 보내기
+		{
+			try {
+				linkfile.write(SystemClock.print()+" System Clock Finished\n");
+				linkfile.write(SystemClock.print()+" Link Finished\n");
+				linkfile.flush();
+			}catch(IOException e) {
+					e.printStackTrace();
+			}
+		}
 	}
-//}
+
+}
