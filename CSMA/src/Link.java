@@ -24,7 +24,8 @@ class Link extends Thread{
 		String time = SystemClock.print();
 		for(int i = 1; i<5; i++)
 		{
-			node[i] = new Node(i,time);
+			node[i] = new Node(i);
+			node[i].start();
 			/*@ node[0] 현재 보내고있는 노드 저장용으로 사용
 			 * index == node 번호 일치함
 			 */
@@ -62,7 +63,8 @@ class Link extends Thread{
 						linkfile.flush();
 						node[node[now_nodenum].node].set_status(0);
 						node[node[now_nodenum].node].finish_receive(now_nodenum);
-						node[now_nodenum].interrupt(); //Thread 동작 종료
+						node[now_nodenum].new_data();
+						node[now_nodenum].wait();
 					}catch(Exception e) {
 						e.printStackTrace();
 						}
@@ -95,7 +97,7 @@ class Link extends Thread{
 								
 								linkfile.write(accept);
 								idle = false;
-								node[j].start(); //accept하고 실행해줌
+								node[j].accept();
 								Thread.sleep(5);
 								now_nodenum = j;
 								
@@ -108,16 +110,16 @@ class Link extends Thread{
 								e.printStackTrace();
 								}
 						}
-							
 						else {
 							String reject = SystemClock.print() + " Reject: Node" +j +
 									" Data Send Request To Node" + node[j].node+ "\n";
 									
 							try {
 									linkfile.write(reject);
+									linkfile.flush();
 									
 								} catch (IOException e) {
-									e.printStackTrace(); 
+									e.printStackTrace();
 								}
 							
 							if(node[j].get_status() == 1 ) {// 받는 중
@@ -126,9 +128,9 @@ class Link extends Thread{
 								 */
 								int temp = 5 - node[j].suc; //temp는 추가 해 줄 time
 								node[j].time += temp;
-								break;
+								//break;
 							}
-							else {//보내는 중
+							else {
 								
 								int back = (int)(Math.random() * 10) + 1;
 								int backofftime = timer.backoffTime(back);
@@ -151,6 +153,11 @@ class Link extends Thread{
 				linkfile.flush();
 			}catch(IOException e) {
 					e.printStackTrace();
+			}
+			for(int i = 1; i<5; i++)
+			{
+				node[i].end();
+				//모든 노드 전송 txt 입력
 			}
 		}
 	}

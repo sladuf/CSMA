@@ -13,24 +13,11 @@ class Node extends Thread{
 	FileWriter fw;
 	
 	//Node 객체
-	Node(int name, String clock){
+	Node(int name){
 		this.name = name;
-		this.fileName = "C://Test//Node"+name+".txt";
-         
-        try{
-            
-            File file = new File(fileName);
-            fw = new FileWriter(file, false);
-             
-            fw.write(clock+" Node"+name+" Start\n");
-            fw.flush();
-             
-        }catch(Exception e){
-            e.printStackTrace();
-        }
         
-        this.time = (int)(Math.random() * 1000*10); //데이터 보낼 시간
-        //this.time = (int)(Math.random() * 100); //데이터 보낼 시간 reject test용 
+        //this.time = (int)(Math.random() * 1000*10); //데이터 보낼 시간
+        this.time = (int)(Math.random() * 100); //데이터 보낼 시간 reject test용 
         this.node = (int)(Math.random() * 4) + 1; //보낼 노드
         while(this.node == name) {
         	this.node = (int)(Math.random() * 4) + 1; //보낼 노드
@@ -57,6 +44,16 @@ class Node extends Thread{
             e.printStackTrace();
         }
 	}
+	
+	public void accept() {
+		try{
+			fw.write(SystemClock.print()+ " Data Send Request Accept from Link\n");
+	        fw.flush();
+	        }catch(Exception e){
+	            e.printStackTrace();
+	            }
+	}
+	
 	public void backoff(int clock) {
 		try{
 
@@ -74,18 +71,24 @@ class Node extends Thread{
 		 */
 		return time;
 	}
-		
 	
+
 	public void run() {
-		/* @param run() : Link에서 Accept를 받고 실행하는 method
-		 * 
-		 */
-		try{
-			fw.write(SystemClock.print()+ " Data Send Request Accept from Link\n");
-	        fw.flush();
-	        }catch(Exception e){
-	            e.printStackTrace();
-	            }
+		
+		this.fileName = "C://Test//Node"+name+".txt";
+        
+        try{
+            
+            File file = new File(fileName);
+            fw = new FileWriter(file, false);
+             
+            fw.write(SystemClock.print() +" Node"+name+" Start\n");
+            fw.flush();
+             
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+		
 		}
 	
 	public void data() {
@@ -104,6 +107,8 @@ class Node extends Thread{
         }catch(Exception e){
             e.printStackTrace();
         }
+	}
+	public void new_data(){
 		this.time = (int)(Math.random() * 1000*10) + SystemClock.get(); //데이터 보낼 시간
 		this.node = (int)(Math.random() * 4) + 1; //보낼 노드
 	    while(this.node == name) {
@@ -141,5 +146,15 @@ class Node extends Thread{
 	}
 	public int get_status() {
 		return status;
+	}
+	public void end() {
+		try{
+
+            fw.write(SystemClock.print()+ " Node" + name + " Finished\n");
+            fw.flush();
+             
+        }catch(Exception e){
+            e.printStackTrace();
+        }
 	}
 }
