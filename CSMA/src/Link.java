@@ -134,7 +134,7 @@ class Link extends Thread{
 								/* node가 data를 전송중인 숫자를 suc으로 설정
 								 * suc == 0 이면 데이터 전송 받지 않는 중
 								 */
-								int temp = node[j].suc; //temp는 추가 해 줄 time
+								int temp = 5 - node[j].suc; //temp는 추가 해 줄 time
 								node[j].time += temp;
 								break;
 							}
