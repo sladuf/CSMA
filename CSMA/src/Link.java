@@ -53,12 +53,15 @@ class Link extends Thread{
 			 */
 			if(now_nodenum != 0) {
 				node[now_nodenum].data();
+				System.out.println(SystemClock.print() +"now_nodenum : " + now_nodenum + "data : " + node[now_nodenum].suc);
 				if(node[now_nodenum].suc == 0) {
 					String finish = SystemClock.print() + " Node"+ now_nodenum+ 
 							" Data Send Finished To Node"+node[now_nodenum].node+"\n";
+					
 					//start가 끝나면
 					try {
 						linkfile.write(finish);
+						linkfile.flush();
 						idle = true;
 						node[node[now_nodenum].node].set_status(0);
 					}catch(Exception e) {
