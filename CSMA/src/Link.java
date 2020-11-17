@@ -11,7 +11,7 @@ class Link extends Thread{
 	public static boolean idle = true;
 	//static public boolean status = false;
 	
-	private int now_nodenum = 0; /*@º¸³»·Á´Â node ÀÌ¸§ ¹ŞÀ½*/
+	private int now_nodenum = 0; /*@ë³´ë‚´ë ¤ëŠ” node ì´ë¦„ ë°›ìŒ*/
 	
 	Node node[] = new Node[5];
 	BackoffTimer timer = new BackoffTimer();
@@ -25,8 +25,8 @@ class Link extends Thread{
 		for(int i = 1; i<5; i++)
 		{
 			node[i] = new Node(i,time);
-			/*@ node[0] ÇöÀç º¸³»°íÀÖ´Â ³ëµå ÀúÀå¿ëÀ¸·Î »ç¿ë
-			 * index == node ¹øÈ£ ÀÏÄ¡ÇÔ
+			/*@ node[0] í˜„ì¬ ë³´ë‚´ê³ ìˆëŠ” ë…¸ë“œ ì €ì¥ìš©ìœ¼ë¡œ ì‚¬ìš©
+			 * index == node ë²ˆí˜¸ ì¼ì¹˜í•¨
 			 */
 		}
 
@@ -45,11 +45,11 @@ class Link extends Thread{
 	
 	
 	public void run() {
-		while(SystemClock.get() <= 1000*60) {
+		while(SystemClock.get() < 1000*60) {
 			SystemClock.set();
 			//try {linkfile.write(SystemClock.print()+"\n");}catch(Exception e) {e.printStackTrace();}
-			/*µ¥ÀÌÅÍ¸¦ º¸³»´Â ÁßÀÌ¸é 0ÀÌ ¾Æ´Ñ nodeÀÇ ¼ıÀÚ°¡ now_nodenumÀÓ
-			 * data()´Â µ¥ÀÌÅÍ Àü¼Û ½Ã°£À» 1ÃÊ¾¿ ´Ã·ÁÁÜ (5ÃÊ°¡ µÇ¸é 0À¸·Î ¹Ù²î±â ¶§¹®¿¡ 0°ú ºñ±³)
+			/*ë°ì´í„°ë¥¼ ë³´ë‚´ëŠ” ì¤‘ì´ë©´ 0ì´ ì•„ë‹Œ nodeì˜ ìˆ«ìê°€ now_nodenumì„
+			 * data()ëŠ” ë°ì´í„° ì „ì†¡ ì‹œê°„ì„ 1ì´ˆì”© ëŠ˜ë ¤ì¤Œ (5ì´ˆê°€ ë˜ë©´ 0ìœ¼ë¡œ ë°”ë€Œê¸° ë•Œë¬¸ì— 0ê³¼ ë¹„êµ)
 			 */
 			if(now_nodenum != 0) {
 				node[now_nodenum].data();
@@ -57,8 +57,12 @@ class Link extends Thread{
 				if(node[now_nodenum].suc == 0) {
 					String finish = SystemClock.print() + " Node"+ now_nodenum+ 
 							" Data Send Finished To Node"+node[now_nodenum].node+"\n";
+<<<<<<< HEAD
 					
 					//start°¡ ³¡³ª¸é
+=======
+					//startê°€ ëë‚˜ë©´
+>>>>>>> branch 'master' of https://github.com/sladuf/CSMA.git
 					try {
 						linkfile.write(finish);
 						linkfile.flush();
@@ -70,22 +74,24 @@ class Link extends Thread{
 					now_nodenum = 0;
 				}
 			}
-			if(SystemClock.print().equals("01:00:000"))//01:00:000¿¡ º¸³»±â
+			if(SystemClock.get() >= 1000*60)//01:00:000 ì´ìƒì¼ ë•Œ ë³´ë‚´ê¸°
 			{
 				try {
 					linkfile.write(SystemClock.print()+" System Clock Finished\n");
 					linkfile.write(SystemClock.print()+" Link Finished\n");
+					linkfile.flush();
 				}catch(IOException e) {
 						e.printStackTrace();
 				}
 			}
 			for(int j = 1; j<5; j++) {
-				if(this.node[j].trans() == SystemClock.get()) { /* node°¡ º¸³¾ ½Ã°£ == System Clock => Àü¼Û¿äÃ» ¸Ş¼¼Áö
-					/*@ String sendReq : Link.txt ÀÔ·Â¿ë String*/
+				if(this.node[j].trans() == SystemClock.get()) { /* nodeê°€ ë³´ë‚¼ ì‹œê°„ == System Clock => ì „ì†¡ìš”ì²­ ë©”ì„¸ì§€
+					/*@ String sendReq : Link.txt ì…ë ¥ìš© String*/
 					String sendReq = SystemClock.print() + " Node"+ j + 
 							" Data Send Request To Node" + node[j].node+ "\n";
 					try {
-						node[j].request();
+					node[j].request();
+					
 						linkfile.write(sendReq);
 						linkfile.flush();
 						
@@ -94,22 +100,22 @@ class Link extends Thread{
 					}if(idle == true){// Link: idle
 					 
 						try { 
-							//Accept Ãâ·Â
+							//Accept ì¶œë ¥
 							String accept = SystemClock.print() + " Accept: Node"+ j+ 
 									" Data Send Request To Node"+node[j].node +"\n";
-							//³¡³µÀ» ¶§ Ãâ·Â
-							/*file¿¡ ¾²°í*/
+							//ëë‚¬ì„ ë•Œ ì¶œë ¥
+							/*fileì— ì“°ê³ */
 							
 								
 								linkfile.write(accept);
-								
-								node[j].start(); //acceptÇÏ°í ½ÇÇàÇØÁÜ
-								//Thread.sleep(5);
-								now_nodenum = j;
 								idle = false;
-								node[node[j].node].set_status(1); // ¹Ş´Â ³ëµåÀÇ status 1·Î º¯°æ
+								node[j].start(); //acceptí•˜ê³  ì‹¤í–‰í•´ì¤Œ
+								Thread.sleep(5);
+								now_nodenum = j;
 								
-								break;
+								node[node[j].node].set_status(1); // ë°›ëŠ” ë…¸ë“œì˜ status 1ë¡œ ë³€ê²½
+								
+								//break;
 								
 								}catch(Exception e) {
 								e.printStackTrace();
@@ -127,19 +133,19 @@ class Link extends Thread{
 									e.printStackTrace(); 
 								}
 							
-							if(node[j].get_status() == 1 ) {// ¹Ş´Â Áß
-								/* node°¡ data¸¦ Àü¼ÛÁßÀÎ ¼ıÀÚ¸¦ sucÀ¸·Î ¼³Á¤
-								 * suc == 0 ÀÌ¸é µ¥ÀÌÅÍ Àü¼Û ¹ŞÁö ¾Ê´Â Áß
+							if(node[j].get_status() == 1 ) {// ë°›ëŠ” ì¤‘
+								/* nodeê°€ dataë¥¼ ì „ì†¡ì¤‘ì¸ ìˆ«ìë¥¼ sucìœ¼ë¡œ ì„¤ì •
+								 * suc == 0 ì´ë©´ ë°ì´í„° ì „ì†¡ ë°›ì§€ ì•ŠëŠ” ì¤‘
 								 */
-								int temp = node[j].suc; //temp´Â Ãß°¡ ÇØ ÁÙ time
+								int temp = node[j].suc; //tempëŠ” ì¶”ê°€ í•´ ì¤„ time
 								node[j].time += temp;
 								break;
 							}
-							else {//º¸³»´Â Áß
+							else {//ë³´ë‚´ëŠ” ì¤‘
 								
 								int back = (int)(Math.random() * 10) + 1;
 								node[j].backoff(timer.backoffTime(back));
-								break;
+								//break;
 								}
 							}
 						}//catch(Exception e) {
