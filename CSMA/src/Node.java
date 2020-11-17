@@ -29,13 +29,12 @@ class Node extends Thread{
             e.printStackTrace();
         }
         
-        this.time = (int)(Math.random() * 1000*30); //데이터 보낼 시간
+        this.time = (int)(Math.random() * 1000*60); //데이터 보낼 시간
         //this.time = (int)(Math.random() * 100); //데이터 보낼 시간 reject test용 
         this.node = (int)(Math.random() * 4) + 1; //보낼 노드
         while(this.node == name) {
         	this.node = (int)(Math.random() * 4) + 1; //보낼 노드
         }
-		System.out.println(this.time);
 	}
 	
 	public void request() {
@@ -67,7 +66,7 @@ class Node extends Thread{
         }catch(Exception e){
             e.printStackTrace();
         }
-		time += clock;
+		this.time += clock;
 	}
 	public int trans() {
 		/* @param trans() : data 전송할 시간 return
@@ -84,7 +83,6 @@ class Node extends Thread{
 		try{
 			fw.write(SystemClock.print()+ " Data Send Request Accept from Link\n");
 	        fw.flush();
-	        data();
 	        }catch(Exception e){
 	            e.printStackTrace();
 	            }
@@ -115,7 +113,27 @@ class Node extends Thread{
 		 */
 		this.status = status;
 	}
-		
+	
+	public void start_receive(int node) {
+		try{
+
+            fw.write(SystemClock.print()+ " Data Receive Start from Node" + node + "\n");
+            fw.flush();
+             
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+	}
+	public void finish_receive(int node) {
+		try{
+
+            fw.write(SystemClock.print()+ " Data Receive Finished from Node" + node + "\n");
+            fw.flush();
+             
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+	}
 	public int get_status() {
 		return status;
 	}

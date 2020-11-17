@@ -60,11 +60,13 @@ class Link extends Thread{
 					try {
 						linkfile.write(finish);
 						linkfile.flush();
-						idle = true;
 						node[node[now_nodenum].node].set_status(0);
+						node[node[now_nodenum].node].finish_receive(now_nodenum);
+						node[now_nodenum].interrupt(); //Thread 동작 종료
 					}catch(Exception e) {
 						e.printStackTrace();
 						}
+					idle = true;
 					now_nodenum = 0;
 				}
 			}
@@ -108,6 +110,7 @@ class Link extends Thread{
 								now_nodenum = j;
 								
 								node[node[j].node].set_status(1); // 받는 노드의 status 1로 변경
+								node[node[j].node].start_receive(now_nodenum);
 								
 								//break;
 								
@@ -138,7 +141,11 @@ class Link extends Thread{
 							else {//보내는 중
 								
 								int back = (int)(Math.random() * 10) + 1;
-								node[j].backoff(timer.backoffTime(back));
+								int backofftime = timer.backoffTime(back);
+								if(backofftime == 0) {
+									backofftime = 1;
+								}
+								node[j].backoff(backofftime);
 								//break;
 								}
 							}
