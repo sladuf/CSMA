@@ -121,13 +121,14 @@ class Link extends Thread{
 								} catch (IOException e) {
 									e.printStackTrace();
 								}
-							
+							node[j].reject(); //node에 거절 txt 입력
 							if(node[j].get_status() == 1 ) {// 받는 중
 								/* node가 data를 전송중인 숫자를 suc으로 설정
 								 * suc == 0 이면 데이터 전송 받지 않는 중
 								 */
 								int temp = 5 - node[j].suc; //temp는 추가 해 줄 time
 								node[j].time += temp;
+								node[j].waiting(now_nodenum, temp);
 								//break;
 							}
 							else {

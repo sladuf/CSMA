@@ -16,8 +16,8 @@ class Node extends Thread{
 	Node(int name){
 		this.name = name;
         
-        //this.time = (int)(Math.random() * 1000*10); //데이터 보낼 시간
-        this.time = (int)(Math.random() * 100); //데이터 보낼 시간 reject test용 
+        this.time = (int)(Math.random() * 1000); //데이터 보낼 시간
+        //this.time = (int)(Math.random() * 100); //데이터 보낼 시간 reject test용 
         this.node = (int)(Math.random() * 4) + 1; //보낼 노드
         while(this.node == name) {
         	this.node = (int)(Math.random() * 4) + 1; //보낼 노드
@@ -36,8 +36,17 @@ class Node extends Thread{
 	}
 	public void reject() {
 		try{
-
             fw.write(SystemClock.print()+ " Data Send Request Reject from Link\n");
+            fw.flush();
+             
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+	}
+	public void waiting(int node, int time) {
+		try{
+            fw.write(SystemClock.print()+ " Now Data Receive from Node"+node+
+            		"Waiting Time : "+time + "\n");
             fw.flush();
              
         }catch(Exception e){
@@ -65,6 +74,7 @@ class Node extends Thread{
         }
 		this.time += clock;
 	}
+	
 	public int trans() {
 		/* @param trans() : data 전송할 시간 return
 		 * @param time : data 전송할 시간(객체 생성시 자동 초기화)
@@ -109,7 +119,7 @@ class Node extends Thread{
         }
 	}
 	public void new_data(){
-		this.time = (int)(Math.random() * 1000*10) + SystemClock.get(); //데이터 보낼 시간
+		this.time = (int)(Math.random() * 1000) + SystemClock.get(); //데이터 보낼 시간
 		this.node = (int)(Math.random() * 4) + 1; //보낼 노드
 	    while(this.node == name) {
 	    	this.node = (int)(Math.random() * 4) + 1; //보낼 노드
