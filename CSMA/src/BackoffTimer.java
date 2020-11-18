@@ -2,7 +2,7 @@
 import java.lang.Math;
  
 /**
- * Backoff timer generator
+ * BackOff timer generator
  */
 public class BackoffTimer {
     /**

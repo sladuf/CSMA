@@ -3,8 +3,16 @@ import java.io.FileWriter;
 
 class Node extends Thread{
 	
+	/*
+	 *@param name node number
+	 *@param num 5msec data
+	 *@param time random send data time 
+	 *@param node random send data node
+	 *@param status 0 is unused, 1 is receiving
+	 *@param suc now sending data time
+	 */
 	private int name;
-	private final int num = 5; //5msec data
+	private final int num = 5;
 	private String fileName;
 	public int time;
 	public int node;
@@ -16,14 +24,34 @@ class Node extends Thread{
 	Node(int name){
 		this.name = name;
         
-        this.time = (int)(Math.random() * 1000); //데이터 보낼 시간
-        //this.time = (int)(Math.random() * 100); //데이터 보낼 시간 reject test용 
-        this.node = (int)(Math.random() * 4) + 1; //보낼 노드
+        this.time = (int)(Math.random() * 1000);
+        this.node = (int)(Math.random() * 4) + 1;
         while(this.node == name) {
-        	this.node = (int)(Math.random() * 4) + 1; //보낼 노드
+        	this.node = (int)(Math.random() * 4) + 1;
         }
 	}
 	
+	public void run() {
+		
+		this.fileName = "C://Test//Node"+name+".txt";
+        
+        try{
+            
+            File file = new File(fileName);
+            fw = new FileWriter(file, false);
+             
+            fw.write(SystemClock.print() +" Node"+name+" Start\n");
+            fw.flush();
+             
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+		
+		}
+	
+	/* 
+	 * file write area -> only call / no parameter
+	 */
 	public void request() {
 		try{
 
@@ -34,7 +62,8 @@ class Node extends Thread{
             e.printStackTrace();
         }
 	}
-	public void reject() {
+	
+	public void reject() { //status == 0
 		try{
             fw.write(SystemClock.print()+ " Data Send Request Reject from Link\n");
             fw.flush();
@@ -43,7 +72,8 @@ class Node extends Thread{
             e.printStackTrace();
         }
 	}
-	public void waiting(int node, int time) {
+	
+	public void waiting(int node, int time) { //status == 1
 		try{
             fw.write(SystemClock.print()+ " Now Data Receive from Node"+node+
             		"Waiting Time : "+time + "\n");
@@ -63,51 +93,6 @@ class Node extends Thread{
 	            }
 	}
 	
-	public void backoff(int clock) {
-		try{
-
-            fw.write(SystemClock.print()+ " Exponential Back-off Time : " +clock+ " msec\n");
-            fw.flush();
-             
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-		this.time += clock;
-	}
-	
-	public int trans() {
-		/* @param trans() : data 전송할 시간 return
-		 * @param time : data 전송할 시간(객체 생성시 자동 초기화)
-		 */
-		return time;
-	}
-	
-
-	public void run() {
-		
-		this.fileName = "C://Test//Node"+name+".txt";
-        
-        try{
-            
-            File file = new File(fileName);
-            fw = new FileWriter(file, false);
-             
-            fw.write(SystemClock.print() +" Node"+name+" Start\n");
-            fw.flush();
-             
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-		
-		}
-	
-	public void data() {
-		suc+=1;
-		if(suc == 5) {
-			success();
-			suc = 0;
-		}
-	}
 	public void success() {
 		try{
 
@@ -117,21 +102,6 @@ class Node extends Thread{
         }catch(Exception e){
             e.printStackTrace();
         }
-	}
-	public void new_data(){
-		this.time = (int)(Math.random() * 1000) + SystemClock.get(); //데이터 보낼 시간
-		this.node = (int)(Math.random() * 4) + 1; //보낼 노드
-	    while(this.node == name) {
-	    	this.node = (int)(Math.random() * 4) + 1; //보낼 노드
-	    	}
-	}
-	
-	public void set_status(int status) {
-		/* 
-		 * Link에서 Accept할 때, Node2 -> Node3이면 Node3.set_status(1) 을 해줘야함
-		 * Link에서 
-		 */
-		this.status = status;
 	}
 	
 	public void start_receive(int node) {
@@ -154,9 +124,7 @@ class Node extends Thread{
             e.printStackTrace();
         }
 	}
-	public int get_status() {
-		return status;
-	}
+	
 	public void end() {
 		try{
 
@@ -167,4 +135,57 @@ class Node extends Thread{
             e.printStackTrace();
         }
 	}
+	
+	/*
+	 * data get or set area
+	 */
+	
+	public int get_status() {
+		return status;
+	}
+	
+	public void set_status(int status) {
+		this.status = status;
+	}
+	
+	public int trans() { //get_time method	
+		return time;
+	}
+	
+	public void backoff(int clock) { 
+		/*
+		 *@param clock back-off time
+		 */
+		try{
+
+            fw.write(SystemClock.print()+ " Exponential Back-off Time : " +clock+ " msec\n");
+            fw.flush();
+             
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+		this.time += clock;
+	}
+	
+	public void data() {
+		/*
+		 * One call, One +1msec
+		 * suc = 0 is data send time 5msec
+		 */
+		suc+=1;
+		if(suc == 5) {
+			success();
+			suc = 0;
+		}
+	}
+	
+	public void new_data(){ //After finish send data
+		this.time = (int)(Math.random() * 1000) + SystemClock.get(); //데이터 보낼 시간
+		this.node = (int)(Math.random() * 4) + 1; //보낼 노드
+	    while(this.node == name) {
+	    	this.node = (int)(Math.random() * 4) + 1; //보낼 노드
+	    	}
+	}
+	
+	
 }

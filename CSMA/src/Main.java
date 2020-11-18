@@ -5,7 +5,6 @@ public class Main {
 		// TODO Auto-generated method stub
 		Link link = new Link();
 		link.start();
-
 	}
 
 }
