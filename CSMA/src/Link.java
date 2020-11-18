@@ -27,6 +27,7 @@ class Link extends Thread{
 		for(int i = 1; i<5; i++)
 		{
 			node[i] = new Node(i);
+			node[i].start();
 
 		}
 

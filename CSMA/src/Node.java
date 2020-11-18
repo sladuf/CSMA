@@ -76,7 +76,7 @@ class Node extends Thread{
 	public void waiting(int node, int time) { //status == 1
 		try{
             fw.write(SystemClock.print()+ " Now Data Receive from Node"+node+
-            		"Waiting Time : "+time + "\n");
+            		" Waiting Time : "+time + "\n");
             fw.flush();
              
         }catch(Exception e){
