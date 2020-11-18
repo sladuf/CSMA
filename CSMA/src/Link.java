@@ -14,7 +14,7 @@ class Link extends Thread{
 	 */
 	FileWriter linkfile;
 	public static boolean idle = true;
-	private int now_nodenum = 0; /*@보내려는 node 이름 받음*/
+	private int now_nodenum = 0;
 	Node node[] = new Node[5];
 	BackoffTimer timer = new BackoffTimer();
 	
